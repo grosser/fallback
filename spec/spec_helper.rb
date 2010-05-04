@@ -1,0 +1,5 @@
+require 'rubygems'
+require 'active_record'
+$LOAD_PATH << 'lib'
+require 'fallback'
+require 'spec/database'
