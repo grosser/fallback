@@ -15,6 +15,7 @@ Gem::Specification.new do |s|
     "Rakefile",
      "Readme.md",
      "VERSION",
+     "fallback.gemspec",
      "lib/fallback.rb",
      "spec/database.rb",
      "spec/fallback_spec.rb",
