@@ -108,4 +108,8 @@ describe Fallback do
       user.name_without_fallback.should == nil
     end
   end
+
+  it "has a VERSION" do
+    Fallback::VERSION.should =~ /^\d+\.\d+\.\d+$/
+  end
 end

@@ -1,4 +1,6 @@
 module Fallback
+  VERSION = File.read( File.join(File.dirname(__FILE__),'..','VERSION') ).strip
+
   def self.included(base)
     base.send(:extend, ClassMethods)
   end
