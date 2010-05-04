@@ -16,8 +16,38 @@ class User2 < ActiveRecord::Base
   fallback :name => :title, :to => :shop
 end
 
+class User3 < ActiveRecord::Base
+  include Fallback
+  set_table_name :users
+  fallback :description => :detailed_description
+end
+
+class User4 < ActiveRecord::Base
+  include Fallback
+  set_table_name :users
+  fallback :name => :description, :if => lambda{|u| u.xxx}
+end
+
+
 describe Fallback do
-  describe 'simple' do
+  describe 'without delegation' do
+    it "uses current if current is present" do
+      user = User3.new(:description => 'DESC', :detailed_description => 'OOOPS')
+      user.description.should == 'DESC'
+    end
+
+    it "calls method if current is blank" do
+      user = User3.new(:description => '  ', :detailed_description => 'DESC')
+      user.description.should == 'DESC'
+    end
+
+    it "calls method if current is nil" do
+      user = User3.new(:description => nil, :detailed_description => 'DESC')
+      user.description.should == 'DESC'
+    end
+  end
+
+  describe 'simple delegation' do
     it "uses current if current is present" do
       user = User.new(:name => 'NAME', :shop => Shop.new(:name => 'OOPS'))
       user.name.should == 'NAME'
@@ -34,7 +64,7 @@ describe Fallback do
     end
   end
 
-  describe 'rewrite' do
+  describe 'delegation with rewrite' do
     it "uses current if current is present" do
       user = User2.new(:name => 'NAME', :shop => Shop.new(:title => 'OOPS'))
       user.name.should == 'NAME'
@@ -48,6 +78,34 @@ describe Fallback do
     it "calls method if current is nil" do
       user = User2.new(:name => nil, :shop => Shop.new(:title => 'TITLE'))
       user.name.should == 'TITLE'
+    end
+  end
+
+  describe 'with lambda' do
+    before do
+      @user = User4.new(:name => 'N', :description => 'D')
+    end
+
+    it "asks lambda" do
+      @user.should_receive(:xxx).and_return true
+      @user.name
+    end
+
+    it "returns original if lambda returns false" do
+      @user.stub!(:xxx).and_return false
+      @user.name.should == 'D'
+    end
+
+    it "delegates if lambda returns true" do
+      @user.stub!(:xxx).and_return true
+      @user.name.should == 'N'
+    end
+  end
+
+  describe "without fallback" do
+    it "can call original value" do
+      user = User.new(:name => nil, :shop => Shop.new(:name => 'NAME'))
+      user.name_without_fallback.should == nil
     end
   end
 end

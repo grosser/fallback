@@ -12,6 +12,7 @@ ActiveRecord::Schema.define(:version => 1) do
     t.string :name
     t.string :title
     t.string :description
+    t.text :detailed_description
   end
 
   create_table :shops do |t|
