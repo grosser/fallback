@@ -32,7 +32,7 @@ module Fallback
           # {:if => :a, :unless => :a} --> [true, false].all? --> false
           conditions.map do |condition, value|
             result = !!(value.respond_to?(:call) ? value.call(self) : send(value))
-            condition == :unless ? result : !result
+            condition == :if ? result : !result
           end.all?
         end
 

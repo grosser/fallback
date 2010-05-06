@@ -28,6 +28,12 @@ class User4 < ActiveRecord::Base
   fallback :name => :description, :if => lambda{|u| u.xxx}
 end
 
+class User5 < ActiveRecord::Base
+  include Fallback
+  set_table_name :users
+  fallback :name => :description, :if => :xxx
+end
+
 
 describe Fallback do
   describe 'without delegation' do
@@ -93,12 +99,33 @@ describe Fallback do
 
     it "returns original if lambda returns false" do
       @user.stub!(:xxx).and_return false
-      @user.name.should == 'D'
+      @user.name.should == 'N'
     end
 
     it "delegates if lambda returns true" do
       @user.stub!(:xxx).and_return true
+      @user.name.should == 'D'
+    end
+  end
+
+  describe 'with method as symbol' do
+    before do
+      @user = User5.new(:name => 'N', :description => 'D')
+    end
+
+    it "asks method" do
+      @user.should_receive(:xxx).and_return true
+      @user.name
+    end
+
+    it "returns original if method returns false" do
+      @user.stub!(:xxx).and_return false
       @user.name.should == 'N'
+    end
+
+    it "delegates if method returns true" do
+      @user.stub!(:xxx).and_return true
+      @user.name.should == 'D'
     end
   end
 
