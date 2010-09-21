@@ -5,7 +5,7 @@ For normal Object's and ActiveRecord's.
       include Fallback
 
       # use description if detailed description is not available
-      fallback :detailed_description => :descripion
+      fallback :detailed_description => :description
 
       has_one :shop
 
